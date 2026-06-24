@@ -9,6 +9,9 @@ use AmoCRM\Models\Talks\TalkCloseActionModel;
 use AmoCRM\Client\AmoCRMApiClient;
 use AmoCRM\Client\AmoCRMApiRequest;
 use AmoCRM\Collections\BaseApiCollection;
+use AmoCRM\Collections\Talks\TalksCollection;
+use AmoCRM\EntitiesServices\Interfaces\HasPageMethodsInterface;
+use AmoCRM\EntitiesServices\Traits\PageMethodsTrait;
 use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Exceptions\AmoCRMoAuthApiException;
 use AmoCRM\Exceptions\NotAvailableForActionException;
@@ -18,13 +21,19 @@ use AmoCRM\Models\BaseApiModel;
 
 /**
  * @method TalkModel|null getOne($id, array $with = [])
+ * @method TalksCollection|null get(?BaseEntityFilter $filter = null, array $with = [])
  */
-class Talks extends BaseEntity
+class Talks extends BaseEntity implements HasPageMethodsInterface
 {
+    use PageMethodsTrait;
+
     public const ITEM_CLASS = TalkModel::class;
 
     /** @var string */
     protected $method = 'api/v' . AmoCRMApiClient::API_VERSION . '/' . EntityTypesInterface::TALKS;
+
+    /** @var string */
+    protected $collectionClass = TalksCollection::class;
 
     /**
      * @param array $response
@@ -34,11 +43,6 @@ class Talks extends BaseEntity
     protected function getEntitiesFromResponse(array $response): array
     {
         return $response[AmoCRMApiRequest::EMBEDDED][EntityTypesInterface::TALKS] ?? [];
-    }
-
-    public function get(?BaseEntityFilter $filter = null, array $with = []): ?BaseApiCollection
-    {
-        throw new NotAvailableForActionException('Method not available for this entity');
     }
 
     /**
