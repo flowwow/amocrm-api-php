@@ -6,7 +6,6 @@ namespace AmoCRM\Filters;
 
 use AmoCRM\Filters\Interfaces\HasPagesInterface;
 use AmoCRM\Filters\Traits\ArrayOrNumericFilterTrait;
-use AmoCRM\Filters\Traits\ArrayOrStringFilterTrait;
 use AmoCRM\Filters\Traits\PagesFilterTrait;
 
 use function is_null;
@@ -15,7 +14,6 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
 {
     use PagesFilterTrait;
     use ArrayOrNumericFilterTrait;
-    use ArrayOrStringFilterTrait;
 
     /** @var array<int, int>|null */
     private $talkIds = null;
@@ -23,8 +21,8 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
     /** @var array<int, int>|null */
     private $entityIds = null;
 
-    /** @var array<array-key, string>|null */
-    private $entityTypes = null;
+    /** @var string|null */
+    private $entityType = null;
 
     /** @var array<int, int>|null */
     private $contactIds = null;
@@ -73,21 +71,21 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
     }
 
     /**
-     * @return array<array-key, string>|null
+     * @return string|null
      */
-    public function getEntityTypes(): ?array
+    public function getEntityType(): ?string
     {
-        return $this->entityTypes;
+        return $this->entityType;
     }
 
     /**
-     * @param array<array-key, string>|string $entityTypes
+     * @param string $entityType
      *
      * @return self
      */
-    public function setEntityTypes($entityTypes): self
+    public function setEntityType(string $entityType): self
     {
-        $this->entityTypes = $this->parseArrayOrStringFilter($entityTypes);
+        $this->entityType = $entityType;
 
         return $this;
     }
@@ -132,9 +130,6 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
         return $this;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function buildFilter(): array
     {
         $filter = [];
@@ -147,8 +142,8 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
             $filter['filter']['entity_id'] = $this->getEntityIds();
         }
 
-        if (!is_null($this->getEntityTypes())) {
-            $filter['filter']['entity_type'] = $this->getEntityTypes();
+        if (!is_null($this->getEntityType())) {
+            $filter['filter']['entity_type'] = $this->getEntityType();
         }
 
         if (!is_null($this->getContactIds())) {
