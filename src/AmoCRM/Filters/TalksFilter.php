@@ -27,8 +27,8 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
     /** @var array<int, int>|null */
     private $contactIds = null;
 
-    /** @var bool|null */
-    private $onlyInWork = null;
+    /** @var bool */
+    private $onlyInWork = false;
 
     /**
      * @return array<int, int>|null
@@ -70,19 +70,11 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEntityType(): ?string
     {
         return $this->entityType;
     }
 
-    /**
-     * @param string $entityType
-     *
-     * @return self
-     */
     public function setEntityType(string $entityType): self
     {
         $this->entityType = $entityType;
@@ -110,19 +102,11 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
         return $this;
     }
 
-    /**
-     * @return bool|null
-     */
-    public function getOnlyInWork(): ?bool
+    public function getOnlyInWork(): bool
     {
         return $this->onlyInWork;
     }
 
-    /**
-     * @param bool $onlyInWork
-     *
-     * @return self
-     */
     public function setOnlyInWork(bool $onlyInWork): self
     {
         $this->onlyInWork = $onlyInWork;
@@ -150,8 +134,8 @@ class TalksFilter extends BaseEntityFilter implements HasPagesInterface
             $filter['filter']['contact_id'] = $this->getContactIds();
         }
 
-        if (!is_null($this->getOnlyInWork())) {
-            $filter['filter']['only_in_work'] = $this->getOnlyInWork();
+        if ($this->getOnlyInWork()) {
+            $filter['filter']['only_in_work'] = true;
         }
 
         return $this->buildPagesFilter($filter);
