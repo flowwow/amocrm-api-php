@@ -8,6 +8,12 @@ use AmoCRM\Exceptions\NotAvailableForActionException;
 
 class TalkModel extends BaseApiModel
 {
+    public const STATUS_IN_WORK = 'in_work';
+    public const STATUS_CLOSED = 'closed';
+    public const STATUS_WITH_ERROR = 'with_error';
+    public const STATUS_NPS_SCHEDULED = 'nps_scheduled';
+    public const STATUS_NPS_IN_PROGRESS = 'nps_in_progress';
+
     /** @var int */
     protected $talkId;
     /** @var int */
@@ -24,12 +30,16 @@ class TalkModel extends BaseApiModel
     protected $entityId;
     /** @var string|null */
     protected $entityType;
+    /** @var string|null */
+    protected $status;
     /** @var bool */
     protected $isInWork;
     /** @var bool */
     protected $isRead;
     /** @var string */
     protected $origin;
+    /** @var int|null */
+    protected $sourceId;
     /** @var int|null */
     protected $missedAt;
     /** @var int */
@@ -49,11 +59,13 @@ class TalkModel extends BaseApiModel
             ->setRate((int)$talk['rate'])
             ->setContactId((int)$talk['contact_id'])
             ->setChatId(empty($talk['chat_id']) ? null : (string)$talk['chat_id'])
-            ->setEntityId(empty($talk['entity_id']) ?: (int)$talk['entity_id'])
-            ->setEntityType(empty($talk['entity_type']) ?: (string)$talk['entity_type'])
+            ->setEntityId(empty($talk['entity_id']) ? null : (int)$talk['entity_id'])
+            ->setEntityType(empty($talk['entity_type']) ? null : (string)$talk['entity_type'])
+            ->setStatus($talk['status'] ?? null)
             ->setIsInWork(!empty($talk['is_in_work']))
             ->setIsRead(!empty($talk['is_read']))
             ->setOrigin((string)($talk['origin'] ?? ''))
+            ->setSourceId(($talk['source_id'] ?? null) !== null ? (int)$talk['source_id'] : null)
             ->setMissedAt(empty($talk['missed_at']) ? null : (int)$talk['missed_at'])
             ->setAccountId((int)$talk['account_id']);
     }
@@ -154,6 +166,18 @@ class TalkModel extends BaseApiModel
         return $this;
     }
 
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     public function isInWork(): bool
     {
         return $this->isInWork;
@@ -186,6 +210,18 @@ class TalkModel extends BaseApiModel
     public function setOrigin(string $origin): self
     {
         $this->origin = $origin;
+
+        return $this;
+    }
+
+    public function getSourceId(): ?int
+    {
+        return $this->sourceId;
+    }
+
+    public function setSourceId(?int $sourceId): self
+    {
+        $this->sourceId = $sourceId;
 
         return $this;
     }
@@ -228,9 +264,11 @@ class TalkModel extends BaseApiModel
             'chat_id'     => $this->getChatId(),
             'entity_id'   => $this->getEntityId(),
             'entity_type' => $this->getEntityType(),
+            'status'      => $this->getStatus(),
             'is_in_work'  => $this->isInWork(),
             'is_read'     => $this->isRead(),
             'origin'      => $this->getOrigin(),
+            'source_id'   => $this->getSourceId(),
             'missed_at'   => $this->getMissedAt(),
             'account_id'  => $this->getAccountId(),
         ];
